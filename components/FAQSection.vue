@@ -6,9 +6,8 @@
         <span class="section-tag">FAQ</span>
         <h2>Got questions?<br><span class="gradient-text">We've got answers</span></h2>
         <p class="section-desc">
-          Can't find what you're looking for? Shoot us an email at
-          <a href="mailto:contact@hexalabs.fr">contact@hexalabs.fr</a>
-          — we're always happy to chat!
+          Can't find what you're looking for? Open a support ticket from your panel
+          and our team will get back to you.
         </p>
       </div>
 
@@ -48,8 +47,8 @@
             <h3>Ready to launch your server?</h3>
             <p>Get started today — your gaming community is waiting.</p>
           </div>
-          <a href="mailto:contact@hexalabs.fr" class="btn-primary">
-            <span>Get in Touch</span>
+          <a :href="panelUrl" class="btn-primary">
+            <span>Get Started</span>
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
           </a>
         </div>
@@ -59,6 +58,9 @@
 </template>
 
 <script setup>
+const { public: publicConfig } = useRuntimeConfig()
+const panelUrl = publicConfig.panelUrl
+
 const openIndex = ref(null)
 
 const toggle = (i) => {
@@ -67,36 +69,36 @@ const toggle = (i) => {
 
 const faqs = [
   {
-    q: 'Where are your servers physically located?',
-    a: "All of our servers are hosted in France 🇫🇷. This means low latency for European players and full compliance with GDPR data regulations. We don't use any third-party data centers outside of France.",
+    q: 'Where are your servers located?',
+    a: 'All of our infrastructure is currently located in France 🇫🇷, giving European players low latency and full GDPR compliance. We may expand to Belgium in the future.',
   },
   {
-    q: 'How long does it take to set up a server?',
-    a: 'Most servers are deployed within minutes of your order. Once your plan is activated, you\'ll receive access to the control panel right away and can start configuring your server immediately.',
+    q: 'Which games do you support?',
+    a: 'We currently offer Minecraft hosting — Vanilla, Fabric, Forge and NeoForge are all supported. More game types may be added over time.',
   },
   {
-    q: 'What games do you support?',
-    a: 'We currently support Minecraft, Rust, Counter-Strike 2, Valheim, ARK: Survival Evolved, Terraria, Garry\'s Mod, V Rising, and more. If you don\'t see your game listed, reach out — we may be able to add support for it!',
+    q: 'How fast will my server be ready?',
+    a: 'Most servers are deployed within minutes of your order being confirmed. Once your plan is active you\'ll have immediate access to the control panel.',
+  },
+  {
+    q: 'Do you offer a free trial?',
+    a: 'Yes — eligible plans include a free trial period so you can test things out before committing. Check the plan details on the store page to see which ones qualify.',
+  },
+  {
+    q: 'What is the cancellation and refund policy?',
+    a: 'The minimum commitment depends on the plan you purchase. Once bought, you can cancel at any time and your server will remain active until the end of the paid period. If you need a refund, open a support ticket and our team will review your request.',
   },
   {
     q: 'Do you offer DDoS protection?',
-    a: 'Yes! All of our servers come with enterprise-grade DDoS mitigation included at no extra cost. Your server stays online even when under attack, so your players can keep playing without interruption.',
-  },
-  {
-    q: 'Can I upgrade or downgrade my plan?',
-    a: "Absolutely. You can upgrade your plan at any time as your community grows. Downgrades are also possible at the end of your billing cycle. We're flexible — we grow with you.",
-  },
-  {
-    q: 'Are automatic backups included?',
-    a: 'Yes, we automatically back up your server data on a regular schedule. You can also trigger manual backups from the control panel at any time. Your world is safe with us.',
+    a: 'Yes. DDoS mitigation is included on every plan at no extra cost. Your server stays online even when targeted, so your players can keep playing without interruption.',
   },
   {
     q: 'What payment methods do you accept?',
-    a: 'We accept major credit/debit cards, PayPal, and other common payment methods. All transactions are processed securely. Contact us if you have a specific payment request.',
+    a: 'Payments are processed securely via Stripe, which supports major credit and debit cards as well as a range of local payment methods depending on your country.',
   },
   {
-    q: 'Is my data GDPR compliant?',
-    a: 'Yes. Since we host everything in France (EU), your data is fully subject to GDPR protections. We only collect what\'s necessary, never sell your data, and you can request deletion at any time. Read our Privacy Policy for full details.',
+    q: 'How do I get support?',
+    a: 'Support is handled through a ticket system built into the control panel. Log in, open a ticket describing your issue, and our team will get back to you as soon as possible.',
   },
 ]
 </script>

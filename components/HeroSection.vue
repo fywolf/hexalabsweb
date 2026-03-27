@@ -19,26 +19,25 @@
 
       <!-- Headline -->
       <h1 class="hero-title animate-fade-up animate-delay-1">
-        Game Servers<br>
-        <span class="gradient-text">Without the Price Tag</span>
+        Your server,<br>
+        <span class="gradient-text">your community</span>
       </h1>
 
       <!-- Subtitle -->
       <p class="hero-subtitle animate-fade-up animate-delay-2">
-        High-performance game servers hosted right in France — low latency, great prices,
-        and zero setup headaches. Whether you're building a community or just playing with friends,
-        we've got you covered.
+        Affordable Minecraft hosting built for casual players and small communities —
+        Vanilla, Fabric, Forge or NeoForge, live in minutes, hosted in France.
       </p>
 
       <!-- CTAs -->
       <div class="hero-actions animate-fade-up animate-delay-3">
-        <a :href="`${panelUrl}/app`" class="btn-primary">
+        <a :href="panelUrl" class="btn-primary">
           <span>Start Hosting</span>
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
         </a>
-        <a href="#store" class="btn-ghost">
+        <NuxtLink to="/store" class="btn-ghost">
           <span>See Plans</span>
-        </a>
+        </NuxtLink>
       </div>
 
       <!-- Stats row -->
@@ -67,11 +66,11 @@ const panelUrl = publicConfig.panelUrl
 const stats = [
   { value: '<20ms', label: 'Avg. Latency (FR)' },
   { value: '99.9%', label: 'Uptime SLA' },
-  { value: '24/7', label: 'Support' },
+  { value: 'Free', label: 'Trial Available' },
   { value: '🇫🇷', label: 'Hosted in France' },
 ]
 
-const games = ['Minecraft', 'Rust', 'CS2', 'Valheim', 'ARK', 'Terraria', 'Garry\'s Mod', 'V Rising']
+const games = ['Minecraft · Vanilla', 'Minecraft · Fabric', 'Minecraft · Forge', 'Minecraft · NeoForge']
 </script>
 
 <style scoped>
