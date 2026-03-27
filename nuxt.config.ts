@@ -43,7 +43,6 @@ export default defineNuxtConfig({
 
   // Future-ready: easy to add runtime config, auth, DB later
   runtimeConfig: {
-    // Private keys — server only (set via NUXT_ env vars)
     panelUrl: process.env.NUXT_PANEL_URL,
     panelApiKey: process.env.NUXT_PANEL_API_KEY,
     public: {
