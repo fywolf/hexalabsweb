@@ -14,14 +14,14 @@
       <nav class="nav-links" aria-label="Main navigation">
         <NuxtLink to="/#features" class="nav-link">Features</NuxtLink>
         <NuxtLink to="/#games" class="nav-link">Games</NuxtLink>
-        <NuxtLink to="/#store" class="nav-link">Store</NuxtLink>
+        <NuxtLink to="/store" class="nav-link">Store</NuxtLink>
         <NuxtLink to="/#faq" class="nav-link">FAQ</NuxtLink>
         <NuxtLink to="/privacy" class="nav-link">Legal</NuxtLink>
       </nav>
 
       <!-- CTA -->
       <div class="header-actions">
-        <a :href="`${panelUrl}/app`" class="btn-primary">
+        <a :href="panelUrl" class="btn-primary">
           <span>Get Started</span>
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
             <path d="M5 12h14M12 5l7 7-7 7"/>
@@ -40,10 +40,10 @@
       <div v-if="menuOpen" class="mobile-nav">
         <NuxtLink to="/#features" class="mobile-link" @click="menuOpen = false">Features</NuxtLink>
         <NuxtLink to="/#games" class="mobile-link" @click="menuOpen = false">Games</NuxtLink>
-        <NuxtLink to="/#store" class="mobile-link" @click="menuOpen = false">Store</NuxtLink>
+        <NuxtLink to="/store" class="mobile-link" @click="menuOpen = false">Store</NuxtLink>
         <NuxtLink to="/#faq" class="mobile-link" @click="menuOpen = false">FAQ</NuxtLink>
         <NuxtLink to="/privacy" class="mobile-link" @click="menuOpen = false">Legal</NuxtLink>
-        <a :href="`${panelUrl}/app`" class="btn-primary" style="margin-top:0.5rem;" @click="menuOpen = false">
+        <a :href="panelUrl" class="btn-primary" style="margin-top:0.5rem;" @click="menuOpen = false">
           <span>Get Started</span>
         </a>
       </div>

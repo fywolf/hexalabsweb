@@ -85,7 +85,7 @@
                 <a
                   v-for="price in product.prices"
                   :key="price.id"
-                  :href="`${panelUrl}/app`"
+                  :href="panelUrl"
                   class="price-btn"
                 >
                   <span class="price-amount">{{ formatPrice(price.cost, catalog.currency) }}</span>
