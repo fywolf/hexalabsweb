@@ -121,9 +121,14 @@
                 :href="panelUrl"
                 class="price-btn"
               >
-                <span class="price-amount">{{ formatPrice(price.cost, catalog.currency) }}</span>
-                <span class="price-sep">/</span>
-                <span class="price-interval">{{ formatInterval(price) }}</span>
+                <div class="price-body">
+                  <span v-if="price.name" class="price-name">{{ price.name }}</span>
+                  <div class="price-row">
+                    <span class="price-amount">{{ formatPrice(price.cost, catalog.currency) }}</span>
+                    <span class="price-sep">/</span>
+                    <span class="price-interval">{{ formatInterval(price) }}</span>
+                  </div>
+                </div>
                 <svg class="price-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
               </a>
             </div>
@@ -464,32 +469,55 @@ function formatInterval(price) {
 }
 
 .price-btn:hover::before { opacity: 1; }
+.price-btn:hover .price-name,
 .price-btn:hover .price-amount,
 .price-btn:hover .price-sep,
 .price-btn:hover .price-interval { color: var(--bg-void); }
 .price-btn:hover .price-arrow { color: var(--bg-void); }
+
+.price-body {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  position: relative;
+  z-index: 1;
+  flex: 1;
+  min-width: 0;
+}
+
+.price-name {
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--accent-cyan);
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  transition: var(--transition);
+}
+
+.price-row {
+  display: flex;
+  align-items: baseline;
+  gap: 0.4rem;
+}
 
 .price-amount {
   font-family: var(--font-display);
   font-size: 1rem;
   font-weight: 700;
   color: var(--text-primary);
-  position: relative;
-  z-index: 1;
+  transition: var(--transition);
 }
 
 .price-sep {
   font-size: 0.85rem;
   color: var(--text-muted);
-  position: relative;
-  z-index: 1;
+  transition: var(--transition);
 }
 
 .price-interval {
   font-size: 0.8rem;
   color: var(--text-secondary);
-  position: relative;
-  z-index: 1;
+  transition: var(--transition);
 }
 
 .price-arrow {
