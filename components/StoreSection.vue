@@ -80,8 +80,13 @@
                 </div>
               </div>
 
+              <!-- Out of stock badge -->
+              <div v-if="product.stock_available === 0" class="out-of-stock-badge">
+                Out of Stock
+              </div>
+
               <!-- Prices -->
-              <div class="product-prices">
+              <div class="product-prices" v-else>
                 <a
                   v-for="price in product.prices"
                   :key="price.id"
@@ -94,6 +99,11 @@
                     <span class="price-interval">/ {{ formatInterval(price) }}</span>
                   </span>
                 </a>
+              </div>
+
+              <!-- Stock remaining hint -->
+              <div v-if="product.stock_available !== null && product.stock_available > 0 && product.stock_available <= 5" class="stock-hint">
+                Only {{ product.stock_available }} slot{{ product.stock_available === 1 ? '' : 's' }} left
               </div>
             </div>
           </div>
@@ -346,6 +356,31 @@ function formatInterval(price) {
   font-weight: 400;
   opacity: 0.8;
   font-size: 0.6rem;
+}
+
+/* Out of stock */
+.out-of-stock-badge {
+  margin-top: auto;
+  display: inline-block;
+  font-family: var(--font-display);
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: var(--radius-md);
+  padding: 0.55rem 1.2rem;
+  cursor: not-allowed;
+  width: fit-content;
+}
+
+.stock-hint {
+  font-size: 0.7rem;
+  color: #f59e0b;
+  margin-top: -0.5rem;
+  font-weight: 500;
 }
 
 /* States */
