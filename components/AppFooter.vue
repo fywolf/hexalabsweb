@@ -41,8 +41,8 @@
       <div class="footer-col">
         <h4 class="footer-col-title">Contact</h4>
         <nav>
-          <a href="mailto:contact@hexalabs.fr" class="footer-link">contact@hexalabs.fr</a>
-          <a href="mailto:support@hexalabs.fr" class="footer-link">support@hexalabs.fr</a>
+          <a href="mailto:contact@hexalabshosting.com" class="footer-link">contact@hexalabshosting.com</a>
+          <a href="mailto:support@hexalabshosting.com" class="footer-link">support@hexalabshosting.com</a>
         </nav>
       </div>
     </div>
