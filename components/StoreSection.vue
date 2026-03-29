@@ -88,8 +88,11 @@
                   :href="panelUrl"
                   class="price-btn"
                 >
-                  <span class="price-amount">{{ formatPrice(price.cost, catalog.currency) }}</span>
-                  <span class="price-interval">/ {{ formatInterval(price) }}</span>
+                  <span v-if="price.name" class="price-name">{{ price.name }}</span>
+                  <span class="price-row">
+                    <span class="price-amount">{{ formatPrice(price.cost, catalog.currency) }}</span>
+                    <span class="price-interval">/ {{ formatInterval(price) }}</span>
+                  </span>
                 </a>
               </div>
             </div>
@@ -278,8 +281,9 @@ function formatInterval(price) {
 
 .price-btn {
   display: inline-flex;
-  align-items: baseline;
-  gap: 0.3rem;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.15rem;
   font-family: var(--font-display);
   font-size: 0.7rem;
   font-weight: 600;
@@ -312,8 +316,28 @@ function formatInterval(price) {
 
 .price-btn:hover::before { opacity: 1; }
 
+.price-name,
 .price-amount,
 .price-interval {
+  position: relative;
+  z-index: 1;
+}
+
+.price-name {
+  display: block;
+  font-size: 0.55rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  opacity: 0.85;
+  line-height: 1;
+  margin-bottom: 0.2rem;
+}
+
+.price-row {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.3rem;
   position: relative;
   z-index: 1;
 }
