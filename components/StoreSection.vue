@@ -80,8 +80,11 @@
                 </div>
               </div>
 
-              <!-- Out of stock badge -->
-              <div v-if="product.stock_available === 0" class="out-of-stock-badge">
+              <!-- Unavailable / Out of stock badge -->
+              <div v-if="!product.is_enabled" class="out-of-stock-badge">
+                Currently Unavailable
+              </div>
+              <div v-else-if="product.stock_available === 0" class="out-of-stock-badge">
                 Out of Stock
               </div>
 
@@ -102,7 +105,7 @@
               </div>
 
               <!-- Stock remaining hint -->
-              <div v-if="product.stock_available !== null && product.stock_available > 0 && product.stock_available <= 5" class="stock-hint">
+              <div v-if="product.is_enabled && product.stock_available !== null && product.stock_available > 0 && product.stock_available <= 5" class="stock-hint">
                 Only {{ product.stock_available }} slot{{ product.stock_available === 1 ? '' : 's' }} left
               </div>
             </div>
