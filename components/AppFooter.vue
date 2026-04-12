@@ -16,7 +16,7 @@
         <p class="footer-tagline">Affordable game servers,<br>proudly hosted in France 🇫🇷</p>
         <div class="footer-badge">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg>
-          99.9% uptime SLA
+          High SLA
         </div>
       </div>
 

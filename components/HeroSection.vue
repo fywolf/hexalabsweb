@@ -65,7 +65,6 @@ const panelUrl = publicConfig.panelUrl
 
 const stats = [
   { value: '<20ms', label: 'Avg. Latency (FR)' },
-  { value: '99.9%', label: 'Uptime SLA' },
   { value: 'Free', label: 'Trial Available' },
   { value: '🇫🇷', label: 'Hosted in France' },
 ]
