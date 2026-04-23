@@ -58,12 +58,12 @@
         <div class="category-header">
           <span class="category-dot"></span>
           <h2 class="category-title">{{ category.name }}</h2>
-          <span class="category-count">{{ category.packs.length }} pack{{ category.packs.length !== 1 ? 's' : '' }}</span>
+          <span class="category-count">{{ (category.packs || []).length }} pack{{ (category.packs || []).length !== 1 ? 's' : '' }}</span>
         </div>
 
         <div class="products-grid">
           <div
-            v-for="pack in category.packs"
+            v-for="pack in (category.packs || [])"
             :key="pack.id"
             class="product-card glass-card"
             :class="{ 'card-oos': !pack.is_available }"
@@ -82,50 +82,18 @@
               <div class="product-meta">
                 <div class="product-name">{{ pack.name }}</div>
                 <div class="product-desc" v-if="pack.description">{{ pack.description }}</div>
-                <div v-if="pack.stock_available !== null && pack.is_available" class="stock-indicator">
+                <div v-if="pack.stock_available !== null && pack.stock_available !== undefined && pack.is_available" class="stock-indicator">
                   <span class="stock-dot"></span>
                   {{ pack.stock_available }} slot{{ pack.stock_available !== 1 ? 's' : '' }} left
                 </div>
               </div>
             </div>
 
-            <!-- Specs -->
-            <div class="specs-grid">
-              <div class="spec" v-if="pack.cores">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="4" y="4" width="16" height="16" rx="2"/><rect x="9" y="9" width="6" height="6"/><path d="M15 2v2M9 2v2M15 20v2M9 20v2M2 15h2M2 9h2M20 15h2M20 9h2"/></svg>
-                <div class="spec-info">
-                  <span class="spec-value">{{ pack.cores }} {{ pack.cores === 1 ? 'Core' : 'Cores' }}</span>
-                  <span class="spec-label">CPU</span>
-                </div>
-              </div>
-              <div class="spec" v-if="pack.memory">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M3 5v14c0 1.66 4.03 3 9 3s9-1.34 9-3V5"/><path d="M3 12c0 1.66 4.03 3 9 3s9-1.34 9-3"/></svg>
-                <div class="spec-info">
-                  <span class="spec-value">{{ formatMemory(pack.memory) }}</span>
-                  <span class="spec-label">RAM</span>
-                </div>
-              </div>
-              <div class="spec" v-if="pack.disk">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
-                <div class="spec-info">
-                  <span class="spec-value">{{ formatMemory(pack.disk) }}</span>
-                  <span class="spec-label">Disk</span>
-                </div>
-              </div>
-              <div class="spec" v-if="pack.backup_limit">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
-                <div class="spec-info">
-                  <span class="spec-value">{{ pack.backup_limit }}</span>
-                  <span class="spec-label">Backups</span>
-                </div>
-              </div>
-            </div>
-
             <!-- Expansions -->
-            <div v-if="pack.expansions?.length" class="expansions-section">
+            <div v-if="pack.expansions && pack.expansions.length" class="expansions-section">
               <div class="expansions-label">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="width:12px;height:12px"><path d="M12 5v14M5 12h14"/></svg>
-                Available expansions
+                Available add-ons
               </div>
               <div class="expansions-list">
                 <div
@@ -142,22 +110,32 @@
               </div>
             </div>
 
-            <!-- Prices -->
+            <!-- Price tiers -->
             <div class="prices">
               <template v-if="pack.is_available">
                 <a
-                  v-for="price in pack.prices"
+                  v-for="price in (pack.prices || [])"
                   :key="price.id"
                   :href="panelUrl"
                   class="price-btn"
                 >
                   <div class="price-body">
                     <span v-if="price.name" class="price-name">{{ price.name }}</span>
+
+                    <!-- Per-tier specs pills -->
+                    <div class="price-specs" v-if="price.cores || price.memory || price.disk">
+                      <span v-if="price.cores" class="price-spec-pill">{{ price.cores }} {{ price.cores === 1 ? 'Core' : 'Cores' }}</span>
+                      <span v-if="price.memory" class="price-spec-pill">{{ formatMemory(price.memory) }} RAM</span>
+                      <span v-if="price.disk" class="price-spec-pill">{{ formatMemory(price.disk) }} Disk</span>
+                      <span v-if="price.backup_limit" class="price-spec-pill">{{ price.backup_limit }} Backups</span>
+                    </div>
+
                     <div class="price-row">
                       <span class="price-amount">{{ formatPrice(price.cost, catalog.currency) }}</span>
                       <span class="price-sep">/</span>
                       <span class="price-interval">{{ formatInterval(price) }}</span>
                     </div>
+                    <span v-if="price.trial_days" class="price-trial">{{ price.trial_days }}-day free trial</span>
                   </div>
                   <svg class="price-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
                 </a>
@@ -459,48 +437,30 @@ function formatInterval(price) {
   flex-shrink: 0;
 }
 
-/* ─── Specs ─────────────────────────────────── */
-.specs-grid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 0.75rem;
+/* ─── Per-price spec pills ───────────────────── */
+.price-specs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.3rem;
+  margin-bottom: 0.4rem;
 }
 
-.spec {
-  display: flex;
-  align-items: center;
-  gap: 0.6rem;
-  background: rgba(255,255,255,0.025);
+.price-spec-pill {
+  font-size: 0.68rem;
+  font-weight: 600;
+  padding: 0.15rem 0.5rem;
+  border-radius: 999px;
+  background: rgba(255,255,255,0.05);
   border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-sm);
-  padding: 0.6rem 0.85rem;
+  color: var(--text-secondary);
 }
 
-.spec svg {
-  width: 14px;
-  height: 14px;
-  color: var(--accent-cyan);
-  flex-shrink: 0;
-}
-
-.spec-info {
-  display: flex;
-  flex-direction: column;
-  line-height: 1.2;
-}
-
-.spec-value {
-  font-family: var(--font-display);
-  font-size: 0.72rem;
-  font-weight: 700;
-  color: var(--text-primary);
-}
-
-.spec-label {
-  font-size: 0.65rem;
-  color: var(--text-muted);
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
+.price-trial {
+  font-size: 0.68rem;
+  color: #22c55e;
+  font-weight: 500;
+  margin-top: 0.2rem;
+  display: block;
 }
 
 /* ─── Expansions ────────────────────────────── */
@@ -701,6 +661,5 @@ function formatInterval(price) {
 @media (max-width: 640px) {
   .products-grid { grid-template-columns: 1fr; }
   .store-hero { padding: 7rem 0 3rem; }
-  .specs-grid { grid-template-columns: repeat(2, 1fr); }
 }
 </style>
