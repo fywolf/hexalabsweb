@@ -72,7 +72,12 @@
                   :key="price.id"
                   :href="panelUrl"
                   class="price-btn"
+                  :class="price.renewable ? 'price-btn--sub' : 'price-btn--onetime'"
                 >
+                  <span class="price-type-label">
+                    <template v-if="price.renewable">↻ Subscription</template>
+                    <template v-else>✓ One-time</template>
+                  </span>
                   <span v-if="price.name" class="price-name">{{ price.name }}</span>
                   <div v-if="price.cores || price.memory || price.disk" class="price-specs">
                     <span v-if="price.cores" class="price-spec-pill">{{ price.cores }} {{ price.cores === 1 ? 'Core' : 'Cores' }}</span>
@@ -83,6 +88,7 @@
                   <span class="price-row">
                     <span class="price-amount">{{ formatPrice(price.cost, catalog.currency) }}</span>
                     <span v-if="price.renewable" class="price-interval">/ {{ formatInterval(price) }}</span>
+                    <span v-else class="price-interval">one-time</span>
                   </span>
                   <span v-if="price.trial_days" class="price-trial">{{ price.trial_days }}-day free trial</span>
                 </a>
@@ -261,7 +267,6 @@ function formatInterval(price) {
   letter-spacing: 0.05em;
   text-transform: uppercase;
   color: var(--bg-void);
-  background: linear-gradient(135deg, var(--accent-cyan), var(--accent-purple));
   border-radius: var(--radius-md);
   padding: 0.6rem 1.2rem;
   text-decoration: none;
@@ -270,28 +275,57 @@ function formatInterval(price) {
   overflow: hidden;
 }
 
+.price-btn--sub {
+  background: linear-gradient(135deg, var(--accent-cyan), var(--accent-purple));
+}
+
+.price-btn--onetime {
+  background: linear-gradient(135deg, rgb(245,158,11), rgb(234,88,12));
+}
+
 .price-btn::before {
   content: '';
   position: absolute;
   inset: 0;
-  background: linear-gradient(135deg, var(--accent-violet), var(--accent-cyan));
   opacity: 0;
   transition: opacity 0.3s ease;
 }
 
+.price-btn--sub::before {
+  background: linear-gradient(135deg, var(--accent-violet), var(--accent-cyan));
+}
+
+.price-btn--onetime::before {
+  background: linear-gradient(135deg, rgb(234,88,12), rgb(245,158,11));
+}
+
 .price-btn:hover {
   transform: translateY(-2px);
-  box-shadow: 0 6px 24px rgba(0, 212, 255, 0.3);
   color: var(--bg-void);
 }
 
+.price-btn--sub:hover { box-shadow: 0 6px 24px rgba(0,212,255,0.3); }
+.price-btn--onetime:hover { box-shadow: 0 6px 24px rgba(245,158,11,0.3); }
+
 .price-btn:hover::before { opacity: 1; }
 
+.price-type-label,
 .price-name,
 .price-amount,
 .price-interval {
   position: relative;
   z-index: 1;
+}
+
+.price-type-label {
+  display: block;
+  font-size: 0.52rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  opacity: 0.8;
+  line-height: 1;
+  margin-bottom: 0.15rem;
 }
 
 .price-name {

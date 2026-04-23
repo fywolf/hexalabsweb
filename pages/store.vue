@@ -118,11 +118,22 @@
                   :key="price.id"
                   :href="panelUrl"
                   class="price-btn"
+                  :class="price.renewable ? 'price-btn--sub' : 'price-btn--onetime'"
                 >
                   <div class="price-body">
+                    <div class="price-type-badge">
+                      <template v-if="price.renewable">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="width:9px;height:9px"><path d="M1 4v6h6M23 20v-6h-6"/><path d="M20.49 9A9 9 0 0 0 5.64 5.64L1 10m22 4l-4.64 4.36A9 9 0 0 1 3.51 15"/></svg>
+                        Subscription
+                      </template>
+                      <template v-else>
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="width:9px;height:9px"><polyline points="20 6 9 17 4 12"/></svg>
+                        One-time
+                      </template>
+                    </div>
+
                     <span v-if="price.name" class="price-name">{{ price.name }}</span>
 
-                    <!-- Per-tier specs pills -->
                     <div class="price-specs" v-if="price.cores || price.memory || price.disk">
                       <span v-if="price.cores" class="price-spec-pill">{{ price.cores }} {{ price.cores === 1 ? 'Core' : 'Cores' }}</span>
                       <span v-if="price.memory" class="price-spec-pill">{{ formatMemory(price.memory) }} RAM</span>
@@ -132,8 +143,11 @@
 
                     <div class="price-row">
                       <span class="price-amount">{{ formatPrice(price.cost, catalog.currency) }}</span>
-                      <span class="price-sep">/</span>
-                      <span class="price-interval">{{ formatInterval(price) }}</span>
+                      <template v-if="price.renewable">
+                        <span class="price-sep">/</span>
+                        <span class="price-interval">{{ formatInterval(price) }}</span>
+                      </template>
+                      <span v-else class="price-interval">one-time</span>
                     </div>
                     <span v-if="price.trial_days" class="price-trial">{{ price.trial_days }}-day free trial</span>
                   </div>
@@ -533,28 +547,45 @@ function formatInterval(price) {
   gap: 0.4rem;
   padding: 0.8rem 1.25rem;
   border-radius: var(--radius-md);
-  background: linear-gradient(135deg, rgba(0,212,255,0.08), rgba(124,58,237,0.08));
-  border: 1px solid rgba(0,212,255,0.2);
   text-decoration: none;
   transition: var(--transition);
   position: relative;
   overflow: hidden;
 }
 
+.price-btn--sub {
+  background: linear-gradient(135deg, rgba(0,212,255,0.08), rgba(124,58,237,0.08));
+  border: 1px solid rgba(0,212,255,0.2);
+}
+
+.price-btn--onetime {
+  background: linear-gradient(135deg, rgba(245,158,11,0.08), rgba(234,88,12,0.05));
+  border: 1px solid rgba(245,158,11,0.25);
+}
+
 .price-btn::before {
   content: '';
   position: absolute;
   inset: 0;
-  background: linear-gradient(135deg, var(--accent-cyan), var(--accent-purple));
   opacity: 0;
   transition: opacity 0.3s ease;
+}
+
+.price-btn--sub::before {
+  background: linear-gradient(135deg, var(--accent-cyan), var(--accent-purple));
+}
+
+.price-btn--onetime::before {
+  background: linear-gradient(135deg, rgb(245,158,11), rgb(234,88,12));
 }
 
 .price-btn:hover {
   border-color: transparent;
   transform: translateY(-1px);
-  box-shadow: 0 6px 24px rgba(0, 212, 255, 0.2);
 }
+
+.price-btn--sub:hover { box-shadow: 0 6px 24px rgba(0,212,255,0.2); }
+.price-btn--onetime:hover { box-shadow: 0 6px 24px rgba(245,158,11,0.2); }
 
 .price-btn:hover::before { opacity: 1; }
 .price-btn:hover .price-name,
@@ -562,6 +593,36 @@ function formatInterval(price) {
 .price-btn:hover .price-sep,
 .price-btn:hover .price-interval { color: var(--bg-void); }
 .price-btn:hover .price-arrow { color: var(--bg-void); }
+.price-btn:hover .price-type-badge { color: var(--bg-void); border-color: transparent; background: rgba(0,0,0,0.15); }
+
+.price-type-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  font-size: 0.6rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  border-radius: 999px;
+  padding: 0.15rem 0.5rem;
+  margin-bottom: 0.25rem;
+  width: fit-content;
+  transition: var(--transition);
+  position: relative;
+  z-index: 1;
+}
+
+.price-btn--sub .price-type-badge {
+  background: rgba(0,212,255,0.12);
+  border: 1px solid rgba(0,212,255,0.3);
+  color: var(--accent-cyan);
+}
+
+.price-btn--onetime .price-type-badge {
+  background: rgba(245,158,11,0.12);
+  border: 1px solid rgba(245,158,11,0.3);
+  color: rgb(251,191,36);
+}
 
 .price-body {
   display: flex;
@@ -576,7 +637,7 @@ function formatInterval(price) {
 .price-name {
   font-size: 0.72rem;
   font-weight: 600;
-  color: var(--accent-cyan);
+  color: var(--text-secondary);
   text-transform: uppercase;
   letter-spacing: 0.07em;
   transition: var(--transition);
