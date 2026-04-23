@@ -45,7 +45,7 @@
             <div class="game-icon">{{ categoryEmoji(cat.name) }}</div>
             <div class="game-info">
               <div class="game-name">{{ cat.name }}</div>
-              <div class="game-type">{{ cat.products.length }} plan{{ cat.products.length !== 1 ? 's' : '' }} available</div>
+              <div class="game-type">{{ (cat.packs || []).length }} plan{{ (cat.packs || []).length !== 1 ? 's' : '' }} available</div>
             </div>
             <div class="game-status">
               <span class="status-dot"></span>
