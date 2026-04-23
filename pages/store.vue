@@ -58,79 +58,113 @@
         <div class="category-header">
           <span class="category-dot"></span>
           <h2 class="category-title">{{ category.name }}</h2>
-          <span class="category-count">{{ category.products.length }} plan{{ category.products.length !== 1 ? 's' : '' }}</span>
+          <span class="category-count">{{ category.packs.length }} pack{{ category.packs.length !== 1 ? 's' : '' }}</span>
         </div>
 
         <div class="products-grid">
           <div
-            v-for="product in category.products"
-            :key="product.id"
+            v-for="pack in category.packs"
+            :key="pack.id"
             class="product-card glass-card"
+            :class="{ 'card-oos': !pack.is_available }"
           >
+            <!-- Out of stock overlay -->
+            <div v-if="!pack.is_available" class="oos-badge">Out of Stock</div>
+
             <!-- Card top: image + name -->
             <div class="card-top">
               <div class="product-img-wrap">
-                <img v-if="product.image" :src="product.image" :alt="product.name" class="product-img" />
+                <img v-if="pack.image" :src="pack.image" :alt="pack.name" class="product-img" />
                 <div v-else class="product-img-fallback">
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="2" width="20" height="20" rx="2"/><path d="M7 2v20M17 2v20M2 12h20M2 7h5M2 17h5M17 17h5M17 7h5"/></svg>
                 </div>
               </div>
               <div class="product-meta">
-                <div class="product-name">{{ product.name }}</div>
-                <div class="product-desc" v-if="product.description">{{ product.description }}</div>
+                <div class="product-name">{{ pack.name }}</div>
+                <div class="product-desc" v-if="pack.description">{{ pack.description }}</div>
+                <div v-if="pack.stock_available !== null && pack.is_available" class="stock-indicator">
+                  <span class="stock-dot"></span>
+                  {{ pack.stock_available }} slot{{ pack.stock_available !== 1 ? 's' : '' }} left
+                </div>
               </div>
             </div>
 
             <!-- Specs -->
             <div class="specs-grid">
-              <div class="spec" v-if="product.cores">
+              <div class="spec" v-if="pack.cores">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="4" y="4" width="16" height="16" rx="2"/><rect x="9" y="9" width="6" height="6"/><path d="M15 2v2M9 2v2M15 20v2M9 20v2M2 15h2M2 9h2M20 15h2M20 9h2"/></svg>
                 <div class="spec-info">
-                  <span class="spec-value">{{ product.cores }} {{ product.cores === 1 ? 'Core' : 'Cores' }}</span>
+                  <span class="spec-value">{{ pack.cores }} {{ pack.cores === 1 ? 'Core' : 'Cores' }}</span>
                   <span class="spec-label">CPU</span>
                 </div>
               </div>
-              <div class="spec" v-if="product.memory">
+              <div class="spec" v-if="pack.memory">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M3 5v14c0 1.66 4.03 3 9 3s9-1.34 9-3V5"/><path d="M3 12c0 1.66 4.03 3 9 3s9-1.34 9-3"/></svg>
                 <div class="spec-info">
-                  <span class="spec-value">{{ formatMemory(product.memory) }}</span>
+                  <span class="spec-value">{{ formatMemory(pack.memory) }}</span>
                   <span class="spec-label">RAM</span>
                 </div>
               </div>
-              <div class="spec" v-if="product.disk">
+              <div class="spec" v-if="pack.disk">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
                 <div class="spec-info">
-                  <span class="spec-value">{{ formatMemory(product.disk) }}</span>
+                  <span class="spec-value">{{ formatMemory(pack.disk) }}</span>
                   <span class="spec-label">Disk</span>
                 </div>
               </div>
-              <div class="spec" v-if="product.backup_limit">
+              <div class="spec" v-if="pack.backup_limit">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
                 <div class="spec-info">
-                  <span class="spec-value">{{ product.backup_limit }}</span>
+                  <span class="spec-value">{{ pack.backup_limit }}</span>
                   <span class="spec-label">Backups</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Expansions -->
+            <div v-if="pack.expansions?.length" class="expansions-section">
+              <div class="expansions-label">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="width:12px;height:12px"><path d="M12 5v14M5 12h14"/></svg>
+                Available expansions
+              </div>
+              <div class="expansions-list">
+                <div
+                  v-for="exp in pack.expansions"
+                  :key="exp.id"
+                  class="expansion-tag"
+                  :class="{ 'expansion-oos': !exp.is_available }"
+                  :title="exp.description || ''"
+                >
+                  <span class="expansion-name">{{ exp.name }}</span>
+                  <span class="expansion-price">+{{ formatPrice(exp.cost, catalog.currency) }}</span>
+                  <span v-if="!exp.is_available" class="expansion-oos-label">OOS</span>
                 </div>
               </div>
             </div>
 
             <!-- Prices -->
             <div class="prices">
-              <a
-                v-for="price in product.prices"
-                :key="price.id"
-                :href="panelUrl"
-                class="price-btn"
-              >
-                <div class="price-body">
-                  <span v-if="price.name" class="price-name">{{ price.name }}</span>
-                  <div class="price-row">
-                    <span class="price-amount">{{ formatPrice(price.cost, catalog.currency) }}</span>
-                    <span class="price-sep">/</span>
-                    <span class="price-interval">{{ formatInterval(price) }}</span>
+              <template v-if="pack.is_available">
+                <a
+                  v-for="price in pack.prices"
+                  :key="price.id"
+                  :href="panelUrl"
+                  class="price-btn"
+                >
+                  <div class="price-body">
+                    <span v-if="price.name" class="price-name">{{ price.name }}</span>
+                    <div class="price-row">
+                      <span class="price-amount">{{ formatPrice(price.cost, catalog.currency) }}</span>
+                      <span class="price-sep">/</span>
+                      <span class="price-interval">{{ formatInterval(price) }}</span>
+                    </div>
                   </div>
-                </div>
-                <svg class="price-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-              </a>
+                  <svg class="price-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                </a>
+              </template>
+              <div v-else class="oos-prices">
+                <span>Currently unavailable</span>
+              </div>
             </div>
           </div>
         </div>
@@ -335,8 +369,28 @@ function formatInterval(price) {
 .product-card {
   display: flex;
   flex-direction: column;
-  gap: 1.5rem;
+  gap: 1.25rem;
   padding: 2rem;
+  position: relative;
+}
+
+.card-oos {
+  opacity: 0.65;
+}
+
+.oos-badge {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  font-size: 0.65rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: #fff;
+  background: rgba(239, 68, 68, 0.85);
+  border-radius: 999px;
+  padding: 0.25rem 0.75rem;
+  z-index: 1;
 }
 
 .card-top {
@@ -387,6 +441,24 @@ function formatInterval(price) {
   line-height: 1.5;
 }
 
+.stock-indicator {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  margin-top: 0.4rem;
+  font-size: 0.72rem;
+  color: var(--accent-cyan);
+}
+
+.stock-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--accent-cyan);
+  box-shadow: 0 0 4px var(--accent-cyan);
+  flex-shrink: 0;
+}
+
 /* ─── Specs ─────────────────────────────────── */
 .specs-grid {
   display: grid;
@@ -429,6 +501,62 @@ function formatInterval(price) {
   color: var(--text-muted);
   text-transform: uppercase;
   letter-spacing: 0.05em;
+}
+
+/* ─── Expansions ────────────────────────────── */
+.expansions-section {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.expansions-label {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  font-size: 0.68rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.expansions-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.expansion-tag {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.25rem 0.65rem;
+  border-radius: 999px;
+  background: rgba(124, 58, 237, 0.08);
+  border: 1px solid rgba(124, 58, 237, 0.25);
+  font-size: 0.68rem;
+}
+
+.expansion-oos {
+  opacity: 0.5;
+}
+
+.expansion-name {
+  color: var(--text-secondary);
+  font-weight: 500;
+}
+
+.expansion-price {
+  color: var(--accent-cyan);
+  font-weight: 600;
+}
+
+.expansion-oos-label {
+  font-size: 0.6rem;
+  font-weight: 700;
+  color: rgb(239, 68, 68);
+  text-transform: uppercase;
 }
 
 /* ─── Prices ─────────────────────────────────── */
@@ -532,6 +660,16 @@ function formatInterval(price) {
 }
 
 .price-btn:hover .price-arrow { transform: translateX(3px); }
+
+.oos-prices {
+  padding: 0.8rem 1.25rem;
+  border-radius: var(--radius-md);
+  background: rgba(255,255,255,0.02);
+  border: 1px solid var(--border-subtle);
+  font-size: 0.82rem;
+  color: var(--text-muted);
+  text-align: center;
+}
 
 /* ─── States ─────────────────────────────────── */
 .state-container {

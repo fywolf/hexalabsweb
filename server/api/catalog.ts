@@ -10,9 +10,9 @@ export default defineCachedEventHandler(async () => {
 
   // Rewrite relative image paths to absolute URLs pointing at the panel's storage
   for (const category of data?.categories ?? []) {
-    for (const product of category.products ?? []) {
-      if (product.image && !product.image.startsWith('http')) {
-        product.image = `${config.panelUrl}/storage/${product.image}`
+    for (const pack of category.packs ?? []) {
+      if (pack.image && !pack.image.startsWith('http')) {
+        pack.image = `${config.panelUrl}/storage/${pack.image}`
       }
     }
   }
