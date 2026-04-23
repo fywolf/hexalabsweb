@@ -38,75 +38,59 @@
 
           <div class="products-grid">
             <div
-              v-for="(product, pi) in category.products"
-              :key="product.id"
+              v-for="(pack, pi) in (category.packs || [])"
+              :key="pack.id"
               class="product-card glass-card"
               :style="`animation-delay: ${(ci * 0.1) + (pi * 0.06)}s`"
             >
-              <!-- Product header -->
+              <!-- Pack header -->
               <div class="product-header">
                 <img
-                  v-if="product.image"
-                  :src="product.image"
-                  :alt="product.name"
+                  v-if="pack.image"
+                  :src="pack.image"
+                  :alt="pack.name"
                   class="product-image"
                 />
                 <div class="product-image-fallback" v-else>
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="2" width="20" height="20" rx="2"/><path d="M7 2v20M17 2v20M2 12h20M2 7h5M2 17h5M17 17h5M17 7h5"/></svg>
                 </div>
                 <div>
-                  <div class="product-name">{{ product.name }}</div>
-                  <div class="product-desc" v-if="product.description">{{ product.description }}</div>
-                </div>
-              </div>
-
-              <!-- Specs -->
-              <div class="product-specs">
-                <div class="spec-item" v-if="product.cores">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="4" y="4" width="16" height="16" rx="2"/><rect x="9" y="9" width="6" height="6"/><path d="M15 2v2M9 2v2M15 20v2M9 20v2M2 15h2M2 9h2M20 15h2M20 9h2"/></svg>
-                  <span>{{ product.cores }} {{ product.cores === 1 ? 'Core' : 'Cores' }}</span>
-                </div>
-                <div class="spec-item" v-if="product.memory">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M3 5v14c0 1.66 4.03 3 9 3s9-1.34 9-3V5"/><path d="M3 12c0 1.66 4.03 3 9 3s9-1.34 9-3"/></svg>
-                  <span>{{ formatMemory(product.memory) }} RAM</span>
-                </div>
-                <div class="spec-item" v-if="product.disk">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
-                  <span>{{ formatMemory(product.disk) }} Disk</span>
-                </div>
-                <div class="spec-item" v-if="product.backup_limit">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
-                  <span>{{ product.backup_limit }} Backups</span>
+                  <div class="product-name">{{ pack.name }}</div>
+                  <div class="product-desc" v-if="pack.description">{{ pack.description }}</div>
                 </div>
               </div>
 
               <!-- Unavailable / Out of stock badge -->
-              <div v-if="!product.is_enabled" class="out-of-stock-badge">
-                Currently Unavailable
-              </div>
-              <div v-else-if="product.stock_available === 0" class="out-of-stock-badge">
-                Out of Stock
+              <div v-if="!pack.is_available" class="out-of-stock-badge">
+                {{ pack.stock_available !== null && pack.stock_available <= 0 ? 'Out of Stock' : 'Currently Unavailable' }}
               </div>
 
               <!-- Prices -->
               <div class="product-prices" v-else>
                 <a
-                  v-for="price in product.prices"
+                  v-for="price in (pack.prices || [])"
                   :key="price.id"
                   :href="panelUrl"
                   class="price-btn"
                 >
                   <span v-if="price.name" class="price-name">{{ price.name }}</span>
+                  <div v-if="price.cores || price.memory || price.disk" class="price-specs">
+                    <span v-if="price.cores" class="price-spec-pill">{{ price.cores }} {{ price.cores === 1 ? 'Core' : 'Cores' }}</span>
+                    <span v-if="price.memory" class="price-spec-pill">{{ formatMemory(price.memory) }} RAM</span>
+                    <span v-if="price.disk" class="price-spec-pill">{{ formatMemory(price.disk) }} Disk</span>
+                    <span v-if="price.backup_limit" class="price-spec-pill">{{ price.backup_limit }} Backups</span>
+                  </div>
                   <span class="price-row">
                     <span class="price-amount">{{ formatPrice(price.cost, catalog.currency) }}</span>
-                    <span class="price-interval">/ {{ formatInterval(price) }}</span>
+                    <span v-if="price.renewable" class="price-interval">/ {{ formatInterval(price) }}</span>
                   </span>
+                  <span v-if="price.trial_days" class="price-trial">{{ price.trial_days }}-day free trial</span>
                 </a>
               </div>
 
               <!-- Stock remaining hint -->
-              <div v-if="product.is_enabled && product.stock_available !== null && product.stock_available > 0 && product.stock_available <= 5" class="stock-hint">
-                Only {{ product.stock_available }} slot{{ product.stock_available === 1 ? '' : 's' }} left
+              <div v-if="pack.is_available && pack.stock_available !== null && pack.stock_available > 0 && pack.stock_available <= 5" class="stock-hint">
+                Only {{ pack.stock_available }} slot{{ pack.stock_available === 1 ? '' : 's' }} left
               </div>
             </div>
           </div>
@@ -211,7 +195,7 @@ function formatInterval(price) {
   animation: fadeUp 0.6s ease both;
 }
 
-/* Product header */
+/* Pack header */
 .product-header {
   display: flex;
   align-items: center;
@@ -256,32 +240,6 @@ function formatInterval(price) {
   color: var(--text-muted);
   margin-top: 0.2rem;
   line-height: 1.4;
-}
-
-/* Specs */
-.product-specs {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.6rem;
-}
-
-.spec-item {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.35rem;
-  font-size: 0.72rem;
-  color: var(--text-secondary);
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px solid rgba(124, 58, 237, 0.15);
-  border-radius: 999px;
-  padding: 0.3rem 0.7rem;
-}
-
-.spec-item svg {
-  width: 12px;
-  height: 12px;
-  color: var(--accent-cyan);
-  flex-shrink: 0;
 }
 
 /* Price buttons */
@@ -347,6 +305,26 @@ function formatInterval(price) {
   margin-bottom: 0.2rem;
 }
 
+.price-specs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem;
+  margin-bottom: 0.25rem;
+  position: relative;
+  z-index: 1;
+}
+
+.price-spec-pill {
+  font-size: 0.55rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 999px;
+  padding: 0.1rem 0.45rem;
+  opacity: 0.9;
+}
+
 .price-row {
   display: inline-flex;
   align-items: baseline;
@@ -359,6 +337,20 @@ function formatInterval(price) {
   font-weight: 400;
   opacity: 0.8;
   font-size: 0.6rem;
+}
+
+.price-trial {
+  font-size: 0.55rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: rgba(0, 0, 0, 0.7);
+  background: rgba(255, 255, 255, 0.25);
+  border-radius: 999px;
+  padding: 0.1rem 0.45rem;
+  position: relative;
+  z-index: 1;
+  margin-top: 0.1rem;
 }
 
 /* Out of stock */
